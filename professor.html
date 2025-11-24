@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Painel do Professor - Olympic School</title>
+     <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        :root{--blue:#0f2b7a;--blue-600:#1f3e95;--yellow:#f2c217;--muted:#425466;--gray:#e5e7eb;--gray-50:#f9fafb;--white:#ffffff;--radius:16px;--shadow:0 10px 30px rgba(15,43,122,.08);--maxw:1200px}
+        *{box-sizing:border-box}
+        body{margin:0;background:#f6f7fb;color:#0f1b2d;font-family:Inter, Roboto, system-ui, -apple-system, "Segoe UI", Arial, sans-serif;line-height:1.6;padding-top:72px}
+        .container{width:min(100% - 2rem, var(--maxw));margin:auto}
+        header.dashboard-header{background:#fff;height:72px;position:fixed;top:0;left:0;right:0;z-index:50;border-bottom:1px solid #eef2ff}
+        .header-inner{display:flex;align-items:center;justify-content:space-between;height:72px}
+        .brand-title{font-size:1.25rem;color:#0f2b7a;font-weight:900;letter-spacing:.02em;display:flex;align-items:center;gap:.6rem}
+        .brand-sub{color:#6b7280;font-size:.9rem}
+        .chip-user{display:inline-flex;align-items:center;gap:.5rem;background:#fff;border:1px solid #e6ecff;border-radius:999px;padding:.5rem 1rem;color:#0f2b7a;font-weight:800}
+        .page{padding:22px 0}
+        .tabs{background:#eef2ff;border:1px solid #e5e7eb;border-radius:999px;display:flex;gap:8px;padding:6px;margin:20px auto;max-width:720px}
+        .tab-btn{flex:1;border:0;background:transparent;padding:10px 14px;border-radius:999px;font-weight:800;color:#1f2937;display:flex;align-items:center;gap:8px;justify-content:center;cursor:pointer}
+        .tab-btn.active{background:#fff;border:1px solid #d1d5db;box-shadow:var(--shadow);color:#0f2b7a}
+        .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:18px}
+        .stat-card{background:#fff;border:1px solid #e6ecff;border-radius:20px;padding:16px;box-shadow:0 4px 12px rgba(15,43,122,.06)}
+        .stat-top{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;color:#0f2b7a;font-weight:800}
+        .stat-value{font-size:1.7rem;font-weight:900;color:#0f2b7a}
+        .stat-meta{font-size:.9rem;color:#6b7280}
+        .accent-blue{background:linear-gradient(0deg,#fff, #eff6ff)}
+        .accent-green{background:linear-gradient(0deg,#fff, #ecfdf5)}
+        .accent-purple{background:linear-gradient(0deg,#fff, #f5f3ff)}
+        .accent-orange{background:linear-gradient(0deg,#fff, #fff7ed)}
+        .analysis-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+        .card{background:#fff;border:1px solid #e6ecff;border-radius:20px;padding:18px;box-shadow:0 4px 12px rgba(15,43,122,.06)}
+        .card h3{margin:0 0 10px;font-size:1.15rem;color:#0f2b7a;font-weight:900;display:flex;align-items:center;gap:8px}
+        .bar-wrap{background:#eef2ff;border:1px solid #e6ecff;border-radius:999px;height:12px;overflow:hidden}
+        .bar-fill{height:100%;background:var(--blue-600)}
+        .row{margin:10px 0}
+        .row .label{font-weight:800;color:#0f2b7a;margin-bottom:6px}
+        .month{display:flex;align-items:center;justify-content:space-between;border:1px solid #eef2ff;background:#fafafa;padding:12px;border-radius:14px;margin-bottom:10px}
+        .summary{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-top:16px}
+        .summary .card{display:grid;place-items:center;padding:24px}
+        .summary .num{font-size:1.7rem;font-weight:900;color:#0f2b7a}
+        @media (max-width:1024px){.stats{grid-template-columns:repeat(2,1fr)}.analysis-grid{grid-template-columns:1fr}.summary{grid-template-columns:1fr 1fr}}
+        @media (max-width:640px){.summary{grid-template-columns:1fr}}
+
+        .title-row{display:flex;align-items:center;justify-content:space-between;margin:20px 0}
+        .page-title{font-weight:900;color:#0f2b7a}
+        .btn{display:inline-flex;align-items:center;gap:.5rem;padding:.5rem 1rem;border:1px solid #e6ecff;border-radius:999px;background:#fff;color:#0f2b7a;font-weight:800;cursor:pointer}
+        .btn.primary{background:#1f3e95;border-color:#1f3e95;color:#fff}
+        .helper{color:#6b7280;font-size:.9rem;margin-bottom:10px}
+
+        .videos-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px}
+        .video-card{background:#fff;border:1px solid #e6ecff;border-radius:20px;overflow:hidden;box-shadow:0 6px 20px rgba(15,43,122,.08);transition:transform .2s,border-color .2s}
+        .video-card:hover{transform:translateY(-4px);border-color:#d1d9ff}
+        .thumb{height:180px;background:linear-gradient(135deg,#eef2ff,#e6ecff);margin:16px;border-radius:16px;position:relative;overflow:hidden}
+        .thumb::after{content:"";position:absolute;inset:0;background:radial-gradient(rgba(255,255,255,.0),rgba(255,255,255,.3));}
+        .thumb::before{content:"";position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:58px;height:58px;border-radius:999px;background:rgba(255,255,255,.9);box-shadow:0 6px 18px rgba(0,0,0,.12)}
+        .thumb i{position:absolute;left:50%;top:50%;transform:translate(-45%,-50%);color:#1f3e95;font-size:20px;z-index:2}
+        .video-meta{padding:0 18px 18px}
+        .video-meta .student-name{font-weight:900;color:#0f2b7a;margin-bottom:6px}
+        .chips{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px}
+        .chip{display:inline-flex;align-items:center;gap:.4rem;padding:.35rem .7rem;border:1px solid #e6ecff;border-radius:999px;background:#f8fafc;color:#0f2b7a;font-weight:700;font-size:.85rem}
+        .video-actions{display:flex;gap:10px}
+
+        .modal-overlay{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:100}
+        .modal-overlay.active{display:flex}
+        .modal{width:min(760px,calc(100% - 2rem));background:#fff;border-radius:24px;box-shadow:0 20px 50px rgba(15,43,122,.15);border:1px solid #e6ecff;position:relative}
+        .modal-close{position:absolute;right:16px;top:12px;background:#fff;border:1px solid #e6ecff;border-radius:999px;width:36px;height:36px;display:grid;place-items:center;font-size:20px;color:#0f2b7a}
+        .modal-header{padding:26px 26px 10px;display:flex;align-items:center;gap:14px}
+        .modal-logo{border-radius:12px}
+        .modal-title{font-size:1.4rem;font-weight:900;color:#0f2b7a}
+        .modal-subtitle{color:#6b7280}
+        .modal-form{padding:12px 26px 26px}
+        .form-group{margin-bottom:12px}
+        .form-label{display:block;font-weight:800;color:#0f2b7a;margin-bottom:6px}
+        .form-input{width:100%;border:1px solid #e6ecff;border-radius:12px;padding:10px 12px;font-size:.95rem}
+        .drop{display:flex;align-items:center;justify-content:center;gap:.6rem;border:2px dashed #d1d9ff;border-radius:14px;padding:24px;color:#0f2b7a;background:#f8fafc;cursor:pointer}
+        .form-actions{display:flex;justify-content:flex-end;margin-top:10px}
+        .btn-primary{display:inline-flex;align-items:center;gap:.5rem;background:#1f3e95;color:#fff;border:1px solid #1f3e95;border-radius:999px;padding:.6rem 1rem;font-weight:900}
+
+        .student{display:flex;align-items:center;gap:14px;border:1px solid #e6ecff;background:#fff;border-radius:16px;padding:12px;margin:10px 0;box-shadow:0 6px 18px rgba(15,43,122,.06)}
+        .avatar{width:42px;height:42px;border-radius:999px;background:#eef2ff;display:grid;place-items:center;font-weight:900;color:#0f2b7a}
+        .student-name{font-weight:900;color:#0f2b7a}
+        .student-meta{color:#6b7280;font-size:.9rem}
+        .progress{background:#eef2ff;border:1px solid #e6ecff;border-radius:999px;height:10px;margin-top:8px;overflow:hidden}
+        .bar{height:100%;background:#1f3e95}
+
+        .grid{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}
+        .ol-list{display:flex;flex-direction:column;gap:12px;margin-top:6px}
+        .ol-card{display:flex;align-items:center;justify-content:space-between;border:1px solid #e6ecff;background:#fff;border-radius:16px;padding:14px;box-shadow:0 6px 18px rgba(15,43,122,.06)}
+        .medals{display:flex;flex-direction:column;gap:12px}
+        .medal-item{display:flex;align-items:center;gap:12px;border:1px solid #e6ecff;background:#fff;border-radius:16px;padding:12px}
+        .medal-badge{display:inline-flex;align-items:center;justify-content:center;padding:.25rem .6rem;border-radius:999px;font-size:.8rem;font-weight:900}
+        .medal-badge.gold{background:#fef3c7;color:#92400e}
+        .medal-badge.silver{background:#f3f4f6;color:#374151}
+        .medal-badge.bronze{background:#fff7ed;color:#92400e}
+
+        @media (max-width:1024px){.videos-grid{grid-template-columns:repeat(2,1fr)}.grid{grid-template-columns:1fr}}
+        @media (max-width:640px){.videos-grid{grid-template-columns:1fr}.title-row{flex-direction:column;gap:10px}.ol-card{flex-direction:column;align-items:flex-start;gap:10px}}
+    </style>
+</head>
+<body>
+    <header class="fixed top-0 w-full z-50 bg-[#0b245f] shadow-lg h-[72px]">
+        <div class="container mx-auto px-4 h-full flex items-center justify-between">
+            <a href="inicio.html" class="flex items-center gap-3">
+                <img src="logo.jpg" alt="Olympic School" class="h-10 rounded bg-white p-1" onerror="this.src='https://placehold.co/100x40?text=Logo'">
+            </a>
+
+            <nav class="hidden md:flex space-x-8">
+                <a href="inicio.html" class="text-gray-300 hover:text-white font-medium">Início</a>
+                <a href="onc.html" class="text-gray-300 hover:text-white font-medium">Olimpíadas</a>
+                <a href="#" class="text-gray-300 hover:text-white font-medium">Materiais</a>
+                <a href="#" class="text-gray-300 hover:text-white font-medium">Ranking</a>
+            </nav>
+
+            <div class="relative flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="font-bold text-sm text-white">Olá, <span id="user-name-prof">Prof.</span>!</p>
+                    <p class="text-xs text-yellow-400">Painel do Professor</p>
+                </div>
+                <button id="user-menu-btn-prof" class="rounded-full border-2 border-yellow-400 bg-white w-10 h-10 grid place-items-center text-blue-900" title="Menu do usuário">
+                    <i class="fa-regular fa-user"></i>
+                </button>
+                <div id="user-menu-prof" class="absolute right-0 top-12 bg-white rounded-xl shadow-lg border w-44 py-2 hidden">
+                    <a href="perfil.html" class="px-4 py-2 flex items-center gap-2 text-gray-700">
+                        <i class="fa-solid fa-id-badge"></i> Perfil
+                    </a>
+                    <a href="professor.html" class="px-4 py-2 flex items-center gap-2 text-gray-700">
+                        <i class="fa-solid fa-chalkboard-user"></i> Painel Prof.
+                    </a>
+                    <a href="index.html" class="px-4 py-2 flex items-center gap-2 text-red-600">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container page">
+        <div class="stats">
+            <div class="stat-card accent-blue"><div class="stat-top"><div>Total de Alunos</div><i class="fa-solid fa-user-group"></i></div><div class="stat-value">4</div><div class="stat-meta">4 ativos recentemente</div></div>
+            <div class="stat-card accent-green"><div class="stat-top"><div>Videoaulas</div><i class="fa-solid fa-clapperboard"></i></div><div class="stat-value">3</div><div class="stat-meta">735 visualizações totais</div></div>
+            <div class="stat-card accent-purple"><div class="stat-top"><div>Olimpíadas Ativas</div><i class="fa-solid fa-trophy"></i></div><div class="stat-value">3</div><div class="stat-meta">25 inscrições totais</div></div>
+            <div class="stat-card accent-orange"><div class="stat-top"><div>Taxa de Sucesso</div><i class="fa-solid fa-chart-line"></i></div><div class="stat-value" style="color:#b45309">79%</div><div class="stat-meta">+12% vs mês anterior</div></div>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-btn" data-tab="alunos"><i class="fa-solid fa-users"></i>Alunos</button>
+            <button class="tab-btn" data-tab="videos"><i class="fa-solid fa-video"></i>Videoaulas</button>
+            <button class="tab-btn" data-tab="olimpiadas"><i class="fa-solid fa-medal"></i>Olimpíadas</button>
+            <button class="tab-btn active" data-tab="analises"><i class="fa-solid fa-chart-bar"></i>Análises</button>
+        </div>
+
+        
+
+        <section id="analises" class="tab-pane" style="display:block">
+            <div class="analysis-grid">
+                <div class="card">
+                    <h3><i class="fa-solid fa-chart-simple" style="color:var(--yellow)"></i>Desempenho por Matéria</h3>
+                    <div class="row"><div class="label">Física</div><div class="bar-wrap"><div class="bar-fill" style="width:85%"></div></div></div>
+                    <div class="row"><div class="label">Química</div><div class="bar-wrap"><div class="bar-fill" style="width:78%"></div></div></div>
+                    <div class="row"><div class="label">Biologia</div><div class="bar-wrap"><div class="bar-fill" style="width:92%"></div></div></div>
+                    <div class="row"><div class="label">Astronomia</div><div class="bar-wrap"><div class="bar-fill" style="width:71%"></div></div></div>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-arrow-trend-up" style="color:var(--yellow)"></i>Progresso Mensal</h3>
+                    <div class="month"><div>Janeiro</div><div class="chip-user" style="padding:.35rem .7rem">+15%</div></div>
+                    <div class="month"><div>Fevereiro</div><div class="chip-user" style="padding:.35rem .7rem">+22%</div></div>
+                    <div class="month"><div>Março (atual)</div><div class="chip-user" style="background:#1f3e95;color:#fff;border-color:#1f3e95;padding:.35rem .7rem">+18%</div></div>
+                </div>
+            </div>
+            <div class="card" style="margin-top:16px">
+                <h3><i class="fa-solid fa-circle-info" style="color:var(--yellow)"></i>Análise Detalhada</h3>
+                <div class="summary">
+                    <div class="card"><div class="num"><i class="fa-solid fa-circle-check" style="color:#10b981"></i> 156</div><div class="student-meta">Módulos Concluídos</div></div>
+                    <div class="card"><div class="num"><i class="fa-solid fa-hourglass-half" style="color:#1f3e95"></i> 342h</div><div class="student-meta">Horas de Estudo</div></div>
+                    <div class="card"><div class="num"><i class="fa-solid fa-medal" style="color:#b45309"></i> 18</div><div class="student-meta">Medalhas Conquistadas</div></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="alunos" class="tab-pane" style="display:none">
+            <div class="card">
+                <h3><i class="fa-solid fa-users" style="color:var(--yellow)"></i>Meus Alunos</h3>
+                <div class="helper">Lista detalhada dos alunos vinculados</div>
+                <div class="student">
+                    <div class="avatar">AS</div>
+                    <div style="flex:1"><div class="student-name">Ana Silva</div><div class="student-meta">ONC • OBF • OBI</div><div class="progress"><div class="bar" style="width:75%"></div></div></div>
+                    <div class="btn"><i class="fa-solid fa-eye"></i>Ver</div>
+                </div>
+                <div class="student">
+                    <div class="avatar">BC</div>
+                    <div style="flex:1"><div class="student-name">Bruno Costa</div><div class="student-meta">ONC • OBF</div><div class="progress"><div class="bar" style="width:82%"></div></div></div>
+                    <div class="btn"><i class="fa-solid fa-eye"></i>Ver</div>
+                </div>
+                <div class="student">
+                    <div class="avatar">CM</div>
+                    <div style="flex:1"><div class="student-name">Carla Mendes</div><div class="student-meta">OBF</div><div class="progress"><div class="bar" style="width:61%"></div></div></div>
+                    <div class="btn"><i class="fa-solid fa-eye"></i>Ver</div>
+                </div>
+            </div>
+        </section>
+
+        <section id="videos" class="tab-pane" style="display:none">
+            <div class="title-row"><div class="page-title" style="font-size:1.3rem"><i class="fa-regular fa-circle-play" style="color:var(--yellow)"></i>Gerenciar Videoaulas</div><div class="btn primary" id="newVideoBtn"><i class="fa-solid fa-upload"></i>Nova Videoaula</div></div>
+            <div class="videos-grid">
+                <div class="video-card">
+                    <div class="thumb"><i class="fa-solid fa-play"></i></div>
+                    <div class="video-meta">
+                        <div class="student-name">Introdução à Física Quântica</div>
+                        <div class="chips"><span class="chip">Física</span><span class="chip"><i class="fa-regular fa-eye"></i> 234</span><span class="chip"><i class="fa-regular fa-calendar"></i> 15/03/2024</span></div>
+                        <div class="video-actions"><div class="btn"><i class="fa-regular fa-pen-to-square"></i>Editar</div><div class="btn" data-delete="1"><i class="fa-regular fa-trash-can"></i>Excluir</div></div>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="thumb"><i class="fa-solid fa-play"></i></div>
+                    <div class="video-meta">
+                        <div class="student-name">Equações Químicas Avançadas</div>
+                        <div class="chips"><span class="chip">Química</span><span class="chip"><i class="fa-regular fa-eye"></i> 189</span><span class="chip"><i class="fa-regular fa-calendar"></i> 12/03/2024</span></div>
+                        <div class="video-actions"><div class="btn"><i class="fa-regular fa-pen-to-square"></i>Editar</div><div class="btn" data-delete="2"><i class="fa-regular fa-trash-can"></i>Excluir</div></div>
+                    </div>
+                </div>
+                <div class="video-card">
+                    <div class="thumb"><i class="fa-solid fa-play"></i></div>
+                    <div class="video-meta">
+                        <div class="student-name">Biologia Celular: Mitose</div>
+                        <div class="chips"><span class="chip">Biologia</span><span class="chip"><i class="fa-regular fa-eye"></i> 312</span><span class="chip"><i class="fa-regular fa-calendar"></i> 10/03/2024</span></div>
+                        <div class="video-actions"><div class="btn"><i class="fa-regular fa-pen-to-square"></i>Editar</div><div class="btn" data-delete="3"><i class="fa-regular fa-trash-can"></i>Excluir</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal-overlay" id="profUploadModal">
+                <div class="modal">
+                    <button class="modal-close" id="closeProfUpload">×</button>
+                    <div class="modal-header">
+                        <img src="https://hebbkx1anhila5yf.public.blob.vercel-storage.com/logo-HSTFxjFNN08t5ea3pyTvpMEFS2nTPa.jpg" alt="Olympic School" width="80" height="80" class="modal-logo">
+                        <h2 class="modal-title">Upload de Nova Videoaula</h2>
+                        <p class="modal-subtitle">Preencha os dados e envie seu vídeo</p>
+                    </div>
+                    <form class="modal-form" id="profUploadForm">
+                        <div class="form-group"><label class="form-label">Título</label><input type="text" class="form-input" id="tTitle" placeholder="Ex: Introdução à Termodinâmica"></div>
+                        <div class="form-group"><label class="form-label">Matéria</label><input type="text" class="form-input" id="tSubject" placeholder="Ex: Física"></div>
+                        <div class="form-group"><label class="form-label">Olimpíada</label><input type="text" class="form-input" id="tOlymp" placeholder="Ex: ONC"></div>
+                        <div class="form-group"><label class="form-label">Descrição</label><textarea class="form-input" id="tDesc" placeholder="Descreva o conteúdo da videoaula..."></textarea></div>
+                        <div class="form-group"><label class="form-label">Arquivo de Vídeo</label><div class="drop" id="dropArea"><i class="fa-solid fa-upload"></i> Arraste o vídeo aqui ou clique</div></div>
+                        <div class="form-actions"><button type="submit" class="btn-primary"><i class="fa-solid fa-cloud-arrow-up"></i> Fazer Upload</button></div>
+                    </form>
+                </div>
+            </div>
+        </section>
+
+        <section id="olimpiadas" class="tab-pane" style="display:none">
+            <div class="grid">
+                <div class="card">
+                    <h3><i class="fa-regular fa-calendar" style="color:var(--yellow)"></i>Olimpíadas Próximas</h3>
+                    <div class="helper">Acompanhe as datas e inscrições dos seus alunos</div>
+                    <div class="ol-list"></div>
+                </div>
+                <div class="card">
+                    <h3><i class="fa-solid fa-medal" style="color:var(--yellow)"></i>Conquistas dos Alunos</h3>
+                    <div class="medals">
+                        <div class="medal-item"><i class="fa-solid fa-medal" style="color:#b45309"></i><div><div class="tl-title">Daniel Oliveira</div><div class="student-meta">Medalha de Ouro – ONC 2024</div></div><span class="medal-badge gold">Ouro</span></div>
+                        <div class="medal-item"><i class="fa-solid fa-medal" style="color:#6b7280"></i><div><div class="tl-title">Ana Silva</div><div class="student-meta">Medalha de Prata – OBF 2024</div></div><span class="medal-badge silver">Prata</span></div>
+                        <div class="medal-item"><i class="fa-solid fa-medal" style="color:#b45309"></i><div><div class="tl-title">Bruno Costa</div><div class="student-meta">Medalha de Bronze – OBI 2024</div></div><span class="medal-badge bronze">Bronze</span></div>
+                        <div class="medal-item" style="justify-content:space-between"><div class="tl-title">Total: 18 Medalhas</div><div class="student-meta">Neste ano letivo</div></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+    </main>
+
+    <script>
+        const tabs = document.querySelectorAll('.tab-btn');
+        const panes = document.querySelectorAll('.tab-pane');
+        tabs.forEach(btn=>btn.addEventListener('click',()=>{tabs.forEach(b=>b.classList.remove('active'));btn.classList.add('active');panes.forEach(p=>p.style.display='none');document.getElementById(btn.dataset.tab).style.display='block'}));
+        const fullName = localStorage.getItem('userName') || 'João Santos';
+        const firstName = fullName.split(' ')[0];
+        const nameEl = document.getElementById('user-name-prof');
+        if(nameEl) nameEl.textContent = `Prof. ${firstName}`;
+        const menuBtn = document.getElementById('user-menu-btn-prof');
+        const menu = document.getElementById('user-menu-prof');
+        if(menuBtn && menu){ menuBtn.addEventListener('click',()=>menu.classList.toggle('hidden')) }
+        const profChip = document.getElementById('prof-chip');
+        if(profChip) profChip.textContent = `Prof. ${firstName}`;
+        const profUploadModal = document.getElementById('profUploadModal');
+        const closeProfUpload = document.getElementById('closeProfUpload');
+        const newVideoTop = document.getElementById('newVideoTop');
+        const newVideoBtn = document.getElementById('newVideoBtn');
+        [newVideoTop,newVideoBtn].forEach(el=>{if(el)el.addEventListener('click',()=>{profUploadModal.classList.add('active');})});
+        if(closeProfUpload){closeProfUpload.addEventListener('click',()=>profUploadModal.classList.remove('active'))}
+        const profUploadForm = document.getElementById('profUploadForm');
+        if(profUploadForm){profUploadForm.addEventListener('submit',(e)=>{e.preventDefault();profUploadModal.classList.remove('active');alert('Sucesso: sua videoaula foi enviada!');})}
+        document.querySelectorAll('[data-delete]').forEach(b=>b.addEventListener('click',()=>{if(confirm('Deseja excluir esta videoaula?')) alert('Videoaula excluída');}));
+        const upcomingRaw = localStorage.getItem('olimpiadasUpcoming');
+        let list = []
+        try{ list = upcomingRaw ? JSON.parse(upcomingRaw) : [] }catch(_){ list = [] }
+        if(list.length === 0){
+          list = [
+            { name: 'ONC 2025', date: '2025-05-20', stage: 'Fase Escolar', inscritos: 18 },
+            { name: 'OBF 2025', date: '2025-06-15', stage: 'Fase 1', inscritos: 12 },
+            { name: 'OBI 2025', date: '2025-07-10', stage: 'Fase 2', inscritos: 9 }
+          ]
+        }
+        const cont = document.querySelector('#olimpiadas .ol-list');
+        if(cont){
+          cont.innerHTML = list.map(e=>`<div class=\"ol-card\"><div><div class=\"student-name\">${e.name}</div><div class=\"student-meta\">${e.stage}</div></div><div style=\"display:flex;align-items:center;gap:10px\"><div class=\"chip\"><i class=\"fa-solid fa-user-group\"></i> ${e.inscritos} inscritos</div><div class=\"chip\"><i class=\"fa-regular fa-calendar\"></i> ${new Date(e.date).toLocaleDateString('pt-BR')}</div><div class=\"btn\">Ver Detalhes</div></div></div>`).join('');
+        }
+    </script>
+</body>
+</html>

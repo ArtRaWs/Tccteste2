@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ONC 2025 - Olympic School</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        /* === VARIÁVEIS DE CORES DA ONC === */
+        :root {
+            --onc-blue: #0f2b7a;
+            --onc-dark-blue: #0a1e55;
+            --onc-yellow: #f2c217;
+            --onc-yellow-hover: #d9aa00;
+            --onc-bg: #f3f4f6;
+            --onc-green: #2ecc71;
+            --onc-purple: #9b59b6;
+            --onc-orange: #e67e22;
+            --white: #ffffff;
+        }
+
+        body {
+            background-color: var(--onc-bg);
+            font-family: 'Segoe UI', Roboto, sans-serif;
+            /* Importante: Padding para o conteúdo não ficar embaixo do header fixo */
+            padding-top: 80px; 
+        }
+
+        /* === HERO SECTION === */
+        .onc-hero {
+            background: linear-gradient(135deg, var(--onc-blue) 0%, var(--onc-dark-blue) 100%);
+            color: var(--white);
+            padding: 3rem 0;
+            margin-bottom: 2rem;
+            border-radius: 0 0 30px 30px; /* Curva suave no final */
+            position: relative;
+            overflow: hidden;
+        }
+
+        .badge-yellow {
+            background: var(--onc-yellow);
+            color: var(--onc-blue);
+            padding: 6px 14px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            display: inline-block;
+            margin-bottom: 1rem;
+            box-shadow: 0 2px 10px rgba(242, 194, 23, 0.3);
+        }
+
+        .onc-stats {
+            display: flex;
+            gap: 20px;
+            margin-top: 2rem;
+        }
+
+        .stat {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(5px);
+            padding: 12px 20px;
+            border-radius: 12px;
+            border: 1px solid rgba(255,255,255,0.15);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .stat i { font-size: 1.5rem; color: var(--onc-yellow); }
+        .tag-free i { color: var(--onc-green); }
+
+        /* Imagem Hero Flutuante */
+        .hero-img-wrapper img {
+            border-radius: 20px;
+            border: 4px solid rgba(255,255,255,0.1);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+            transform: rotate(-2deg);
+            transition: transform 0.3s;
+        }
+        .hero-img-wrapper img:hover { transform: rotate(0deg); }
+
+        /* === CARTÕES E LAYOUT === */
+        .card-white {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 2rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 1.5rem;
+        }
+
+        .card-title {
+            color: var(--onc-blue);
+            font-size: 1.5rem;
+            margin-bottom: 1.2rem;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .card-title::before {
+            content: '';
+            display: block;
+            width: 6px;
+            height: 24px;
+            background: var(--onc-yellow);
+            border-radius: 3px;
+        }
+
+        /* === ABAS (CONSIDERANDO O BUG) === */
+        .content-tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: #eef2ff;
+            padding: 5px;
+            border-radius: 12px;
+            width: fit-content;
+        }
+
+        .c-tab {
+            padding: 10px 20px;
+            font-weight: 600;
+            color: #6b7280;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .c-tab:hover { color: var(--onc-blue); background: rgba(255,255,255,0.5); }
+        
+        .c-tab.active {
+            color: var(--onc-blue);
+            background: var(--white);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        /* Esconde painéis inativos */
+        .tab-pane { display: none; animation: fadeIn 0.3s ease; }
+        .tab-pane.active { display: block; }
+
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        /* === ACORDEÃO === */
+        .accordion-btn {
+            width: 100%;
+            text-align: left;
+            padding: 18px 0;
+            font-weight: 700;
+            color: #1f2937;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #eee;
+        }
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease;
+            color: #4b5563;
+        }
+        .accordion-content.open { max-height: 300px; padding-bottom: 15px; }
+
+        /* === MATÉRIAS (BOTÕES DE FILTRO) === */
+        .subject-btn {
+            padding: 10px 18px;
+            border: 1px solid #e5e7eb;
+            border-radius: 50px;
+            background: var(--white);
+            font-weight: 600;
+            color: #6b7280;
+            margin-right: 10px;
+            margin-bottom: 10px;
+            transition: all 0.2s;
+        }
+        .subject-btn:hover { border-color: var(--onc-blue); color: var(--onc-blue); }
+        .subject-btn.active {
+            background: var(--onc-blue); color: white; border-color: var(--onc-blue);
+            box-shadow: 0 4px 10px rgba(15, 43, 122, 0.2);
+        }
+        
+        /* Cores específicas para botões ativos */
+        .subject-btn[onclick*="bio"].active { background: var(--onc-green); border-color: var(--onc-green); }
+        .subject-btn[onclick*="ast"].active { background: var(--onc-purple); border-color: var(--onc-purple); }
+        
+        .topic-list li {
+            padding: 12px 0;
+            border-bottom: 1px solid #f3f4f6;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .green-theme i { color: var(--onc-green); }
+        .blue-theme i { color: var(--onc-blue); }
+        .purple-theme i { color: var(--onc-purple); }
+
+        /* === SIDEBAR === */
+        .sidebar-sticky { position: sticky; top: 100px; }
+        .info-list li {
+            display: flex; justify-content: space-between;
+            padding: 12px 0; border-bottom: 1px solid #eee; font-size: 0.9rem;
+        }
+        .download-item {
+            display: flex; align-items: center; gap: 12px;
+            padding: 12px; background: #f8fafc;
+            border-radius: 10px; margin-bottom: 10px;
+            transition: 0.2s;
+        }
+        .download-item:hover { background: #eff6ff; }
+
+        /* === TIMELINE === */
+        .timeline-vertical { border-left: 3px solid #e5e7eb; margin-left: 8px; padding-left: 25px; }
+        .t-item { position: relative; padding-bottom: 30px; }
+        .t-dot {
+            width: 16px; height: 16px; background: var(--white);
+            border: 4px solid var(--onc-blue); border-radius: 50%;
+            position: absolute; left: -35px; top: 4px;
+        }
+        .t-item.active .t-dot { border-color: var(--onc-yellow); background: var(--onc-yellow); }
+
+        /* === RESPONSIVIDADE === */
+        @media (max-width: 768px) {
+            .onc-hero-grid { grid-template-columns: 1fr; text-align: center; }
+            .onc-stats { justify-content: center; flex-wrap: wrap; }
+            .hero-img-wrapper { display: none; } /* Esconde imagem no mobile para limpar layout */
+            .content-tabs { width: 100%; overflow-x: auto; }
+            .page-grid { grid-template-columns: 1fr; } /* Sidebar vai para baixo */
+        }
+    </style>
+</head>
+<body>
+
+    <header class="fixed top-0 w-full z-50 bg-[#0b245f] shadow-lg h-[72px]">
+        <div class="container mx-auto px-4 h-full flex items-center justify-between">
+            <a href="inicio.html" class="flex items-center gap-3">
+                <img src="logo.jpg" alt="Olympic School" class="h-10 rounded bg-white p-1" onerror="this.src='https://placehold.co/100x40?text=Logo'">
+            </a>
+
+            <nav class="hidden md:flex space-x-8">
+                <a href="inicio.html" class="text-gray-300 hover:text-white font-medium">Início</a>
+                <a href="#" class="text-white font-bold border-b-2 border-yellow-400">Olimpíadas</a>
+                <a href="#" class="text-gray-300 hover:text-white font-medium">Materiais</a>
+                <a href="#" class="text-gray-300 hover:text-white font-medium">Ranking</a>
+            </nav>
+
+            <div class="relative flex items-center gap-3">
+                <div class="text-right hidden sm:block">
+                    <p class="font-bold text-sm text-white">Olá, <span id="user-name-onc">Aluno</span>!</p>
+                    <p class="text-xs text-yellow-400">Nível: Ouro</p>
+                </div>
+                <button id="user-menu-btn-onc" class="rounded-full border-2 border-yellow-400 bg-white w-10 h-10 grid place-items-center text-blue-900" title="Menu do usuário">
+                    <i class="fa-regular fa-user"></i>
+                </button>
+                <div id="user-menu-onc" class="absolute right-0 top-12 bg-white rounded-xl shadow-lg border w-44 py-2 hidden">
+                    <a href="perfil.html" class="px-4 py-2 flex items-center gap-2 text-gray-700">
+                        <i class="fa-solid fa-id-badge"></i> Perfil
+                    </a>
+                    <a href="professor.html" class="px-4 py-2 flex items-center gap-2 text-gray-700">
+                        <i class="fa-solid fa-chalkboard-user"></i> Painel Prof.
+                    </a>
+                    <a href="index.html" class="px-4 py-2 flex items-center gap-2 text-red-600">
+                        <i class="fa-solid fa-right-from-bracket"></i> Sair
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <section class="onc-hero">
+        <div class="container mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8 items-center">
+                <div>
+                    <span class="badge-yellow">ONC 2025</span>
+                    <h1 class="text-4xl md:text-5xl font-extrabold mb-4">Olimpíada Nacional de Ciências</h1>
+                    <p class="text-lg text-blue-100 mb-6 leading-relaxed">
+                        A maior competição interdisciplinar do país. Física, Química, Biologia, Astronomia e História integradas em desafios que vão além da sala de aula.
+                    </p>
+                    
+                    <div class="onc-stats">
+                        <div class="stat">
+                            <i class="fa-solid fa-users"></i>
+                            <div>
+                                <strong class="text-xl block">50k+</strong>
+                                <span class="text-xs uppercase opacity-80">Participantes</span>
+                            </div>
+                        </div>
+                        <div class="stat">
+                            <i class="fa-solid fa-book"></i>
+                            <div>
+                                <strong class="text-xl block">5</strong>
+                                <span class="text-xs uppercase opacity-80">Disciplinas</span>
+                            </div>
+                        </div>
+                        <div class="stat tag-free">
+                            <i class="fa-solid fa-check-circle"></i>
+                            <div>
+                                <strong class="text-xl block">100%</strong>
+                                <span class="text-xs uppercase opacity-80">Gratuita</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="hero-img-wrapper hidden md:block">
+                    <img src="https://yt3.googleusercontent.com/ytc/AIdro_m8ekAPIfdq8urEAaLeC4u-XmztHfIiIhXqS5phEdYReb8=s900-c-k-c0x00ffffff-no-rj" 
+                         alt="Estudantes ONC" class="w-full max-w-md mx-auto">
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <main class="container mx-auto px-4 pb-12">
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 page-grid">
+            
+            <div class="lg:col-span-2">
+                
+                <div class="content-tabs">
+                    <button class="c-tab active" onclick="switchTab('sobre')">
+                        <i class="fa-solid fa-circle-info"></i> Sobre a Prova
+                    </button>
+                    <button class="c-tab" onclick="switchTab('conteudo')">
+                        <i class="fa-solid fa-book-open"></i> Conteúdos
+                    </button>
+                    <button class="c-tab" onclick="switchTab('preparacao')">
+                        <i class="fa-solid fa-graduation-cap"></i> Dicas & Prêmios
+                    </button>
+                </div>
+
+                <div id="sobre" class="tab-pane active">
+                    <div class="card-white">
+                        <h2 class="card-title">O que é a ONC?</h2>
+                        <p class="text-gray-600 mb-4">A Olimpíada Nacional de Ciências (ONC) é uma competição brasileira que integra as ciências naturais. Ela busca identificar talentos e estimular o interesse científico.</p>
+                        
+                        <div class="mt-4 space-y-2">
+                            <div class="border-b border-gray-200">
+                                <button class="accordion-btn" onclick="toggleAccordion(this)">
+                                    Quem pode participar? <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <p class="py-2">Estudantes do <strong>6º ano do Fundamental ao 3º ano do Médio</strong> (e 4º ano Técnico). Inscrição via escola.</p>
+                                </div>
+                            </div>
+                            <div class="border-b border-gray-200">
+                                <button class="accordion-btn" onclick="toggleAccordion(this)">
+                                    Como funcionam as fases? <i class="fa-solid fa-chevron-down"></i>
+                                </button>
+                                <div class="accordion-content">
+                                    <ul class="list-disc pl-5 py-2 text-sm space-y-1">
+                                        <li><strong>1ª Fase (Objetiva):</strong> Múltipla escolha, online ou impressa.</li>
+                                        <li><strong>2ª Fase (Discursiva):</strong> Questões abertas, define as medalhas.</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-white">
+                        <h2 class="card-title">Cronograma 2025</h2>
+                        <div class="timeline-vertical mt-4">
+                            <div class="t-item active">
+                                <div class="t-dot"></div>
+                                <div class="t-date">Março - Abril</div>
+                                <h4 class="text-blue-900 font-bold">Fase Escolar</h4>
+                                <p class="text-sm text-gray-500">Inscrições e aplicação local.</p>
+                            </div>
+                            <div class="t-item">
+                                <div class="t-dot"></div>
+                                <div class="t-date">Maio - Junho</div>
+                                <h4 class="text-blue-900 font-bold">Fase Regional</h4>
+                                <p class="text-sm text-gray-500">Prova classificatória.</p>
+                            </div>
+                            <div class="t-item">
+                                <div class="t-dot"></div>
+                                <div class="t-date">Agosto</div>
+                                <h4 class="text-blue-900 font-bold">Fase Nacional</h4>
+                                <p class="text-sm text-gray-500">Grande final discursiva.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="conteudo" class="tab-pane">
+                    <div class="card-white">
+                        <h2 class="card-title">O que estudar?</h2>
+                        <p class="text-gray-500 mb-6 text-sm">Clique nas matérias para ver os tópicos.</p>
+                        
+                        <div class="flex flex-wrap gap-2 mb-6">
+                            <button class="subject-btn active" onclick="filterSubject('bio')"><i class="fa-solid fa-leaf"></i> Biologia</button>
+                            <button class="subject-btn" onclick="filterSubject('qui')"><i class="fa-solid fa-flask"></i> Química</button>
+                            <button class="subject-btn" onclick="filterSubject('fis')"><i class="fa-solid fa-bolt"></i> Física</button>
+                            <button class="subject-btn" onclick="filterSubject('ast')"><i class="fa-solid fa-star"></i> Astronomia</button>
+                        </div>
+
+                        <div id="bio-content" class="subject-content">
+                            <h3 class="text-green-600 font-bold border-b pb-2 mb-3">Biologia</h3>
+                            <ul class="topic-list green-theme">
+                                <li><i class="fa-solid fa-check"></i> Ecologia e Meio Ambiente</li>
+                                <li><i class="fa-solid fa-check"></i> Genética e Evolução</li>
+                                <li><i class="fa-solid fa-check"></i> Fisiologia Humana</li>
+                                <li><i class="fa-solid fa-check"></i> Citologia</li>
+                            </ul>
+                        </div>
+
+                        <div id="qui-content" class="subject-content hidden">
+                            <h3 class="text-blue-600 font-bold border-b pb-2 mb-3">Química</h3>
+                            <ul class="topic-list blue-theme">
+                                <li><i class="fa-solid fa-check"></i> Tabela Periódica</li>
+                                <li><i class="fa-solid fa-check"></i> Estequiometria</li>
+                                <li><i class="fa-solid fa-check"></i> Ligações Químicas</li>
+                                <li><i class="fa-solid fa-check"></i> Funções Inorgânicas</li>
+                            </ul>
+                        </div>
+
+                         <div id="fis-content" class="subject-content hidden">
+                            <h3 class="text-blue-800 font-bold border-b pb-2 mb-3">Física</h3>
+                            <ul class="topic-list blue-theme">
+                                <li><i class="fa-solid fa-check"></i> Cinemática</li>
+                                <li><i class="fa-solid fa-check"></i> Dinâmica e Leis de Newton</li>
+                                <li><i class="fa-solid fa-check"></i> Termologia</li>
+                                <li><i class="fa-solid fa-check"></i> Óptica</li>
+                            </ul>
+                        </div>
+
+                        <div id="ast-content" class="subject-content hidden">
+                            <h3 class="text-purple-600 font-bold border-b pb-2 mb-3">Astronomia</h3>
+                            <ul class="topic-list purple-theme">
+                                <li><i class="fa-solid fa-check"></i> Sistema Solar</li>
+                                <li><i class="fa-solid fa-check"></i> Fases da Lua e Marés</li>
+                                <li><i class="fa-solid fa-check"></i> Estrelas e Constelações</li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-white mt-6">
+                        <h2 class="card-title" style="display:flex;align-items:center;gap:10px"><span style="display:inline-block;width:6px;height:22px;background:#f2c217;border-radius:999px"></span>ONC 2024 – Provas e Gabaritos</h2>
+                        <p class="text-sm text-gray-600 mb-4">Acesse materiais oficiais por nível (Fase 1 e Fase 2).</p>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="p-4 border rounded-lg">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-bold">Nível A</span>
+                                    <span class="text-xs text-gray-500">Fundamental II</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__1-etapa-nivel-a-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 1ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-primeira-fase-nivel-a" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 1ª Etapa – Gabarito</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__2-etapa-nivel-a-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 2ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-segunda-fase-nivel-a" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 2ª Etapa – Gabarito</a>
+                                </div>
+                            </div>
+                            <div class="p-4 border rounded-lg">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-bold">Nível B</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__1-etapa-nivel-b-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 1ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-primeira-fase-nivel-b" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 1ª Etapa – Gabarito</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__2-etapa-nivel-b-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 2ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-segunda-fase-nivel-b" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 2ª Etapa – Gabarito</a>
+                                </div>
+                            </div>
+                            <div class="p-4 border rounded-lg">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-bold">Nível C</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__1-etapa-nivel-c-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 1ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-primeira-fase-nivel-c" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 1ª Etapa – Gabarito</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__2-etapa-nivel-c-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 2ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-segunda-fase-nivel-c" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 2ª Etapa – Gabarito</a>
+                                </div>
+                            </div>
+                            <div class="p-4 border rounded-lg">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-bold">Nível D</span>
+                                </div>
+                                <div class="flex flex-col gap-2">
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__1-etapa-nivel-d-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 1ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-primeira-fase-nivel-d" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 1ª Etapa – Gabarito</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__2-etapa-nivel-d-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700"><i class="fa-solid fa-file-pdf"></i> 2ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-segunda-fase-nivel-d" class="inline-flex items-center gap-2 text-gray-700"><i class="fa-solid fa-link"></i> 2ª Etapa – Gabarito</a>
+                                </div>
+                            </div>
+                            <div class="p-4 border rounded-lg md:col-span-2">
+                                <div class="flex items-center gap-2 mb-2">
+                                    <span class="px-2 py-1 rounded bg-blue-50 text-blue-700 text-xs font-bold">Nível E (Avançado)</span>
+                                </div>
+                                <div class="flex flex-col gap-2 md:flex-row md:flex-wrap">
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__1-etapa-nivel-e-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700 mr-6 mb-2"><i class="fa-solid fa-file-pdf"></i> 1ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-primeira-fase-nivel-e" class="inline-flex items-center gap-2 text-gray-700 mr-6 mb-2"><i class="fa-solid fa-link"></i> 1ª Etapa – Gabarito</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://mobtex-sites.s3.amazonaws.com/c2_fwEF14C5rb9G9WBVzTIM5_1752501956__2-etapa-nivel-e-onc2024.pdf" class="inline-flex items-center gap-2 text-blue-700 mr-6 mb-2"><i class="fa-solid fa-file-pdf"></i> 2ª Etapa – Prova (PDF)</a>
+                                    <a target="_blank" rel="noreferrer noopener" href="https://noic.com.br/olimpiadas/ciencias/onc-2024-segunda-fase-nivel-e" class="inline-flex items-center gap-2 text-gray-700 mr-6 mb-2"><i class="fa-solid fa-link"></i> 2ª Etapa – Gabarito</a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div id="preparacao" class="tab-pane">
+                    <div class="card-white">
+                        <h2 class="card-title">Dicas de Ouro</h2>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <i class="fa-solid fa-pen-to-square text-blue-900 text-2xl mb-2"></i>
+                                <h3 class="font-bold text-lg">Provas Antigas</h3>
+                                <p class="text-sm text-gray-600">A melhor forma de estudar é resolvendo as provas dos anos anteriores. A ONC repete padrões.</p>
+                            </div>
+                            <div class="bg-gray-50 p-4 rounded-lg border border-gray-200">
+                                <i class="fa-solid fa-clock text-blue-900 text-2xl mb-2"></i>
+                                <h3 class="font-bold text-lg">Gestão de Tempo</h3>
+                                <p class="text-sm text-gray-600">Na 2ª fase, as questões exigem escrita. Treine explicar seu raciocínio de forma clara.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-white mt-6">
+                        <h2 class="card-title">Premiações</h2>
+                        <div class="flex flex-wrap gap-4 text-center justify-center">
+                            <div class="p-4 border rounded-lg w-32 bg-yellow-50 border-yellow-200">
+                                <i class="fa-solid fa-medal text-3xl text-yellow-600 mb-2"></i>
+                                <div class="font-bold text-yellow-800">Ouro</div>
+                            </div>
+                            <div class="p-4 border rounded-lg w-32 bg-gray-50 border-gray-300">
+                                <i class="fa-solid fa-medal text-3xl text-gray-500 mb-2"></i>
+                                <div class="font-bold text-gray-700">Prata</div>
+                            </div>
+                            <div class="p-4 border rounded-lg w-32 bg-orange-50 border-orange-200">
+                                <i class="fa-solid fa-medal text-3xl text-orange-700 mb-2"></i>
+                                <div class="font-bold text-orange-900">Bronze</div>
+                            </div>
+                        </div>
+                        <p class="text-center text-sm text-gray-500 mt-4 bg-blue-50 p-2 rounded">
+                            <i class="fa-solid fa-star text-blue-500"></i> Menção Honrosa para quem acerta +50% da prova.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="lg:col-span-1">
+                <div class="card-white sidebar-sticky">
+                    <h3 class="text-xl font-bold text-blue-900 mb-4 border-b pb-2">
+                        Info Rápida <span class="bg-yellow-400 text-blue-900 text-xs px-2 py-1 rounded ml-2">ONC</span>
+                    </h3>
+                    <ul class="info-list">
+                        <li>
+                            <span class="text-gray-500">Público</span>
+                            <span class="font-bold text-gray-800">Fund. II e Médio</span>
+                        </li>
+                        <li>
+                            <span class="text-gray-500">Formato</span>
+                            <span class="font-bold text-gray-800">Objetiva + Discursiva</span>
+                        </li>
+                        <li>
+                            <span class="text-gray-500">Custo</span>
+                            <span class="font-bold text-green-600">100% Gratuita</span>
+                        </li>
+                    </ul>
+                    <button class="w-full bg-yellow-400 hover:bg-yellow-500 text-blue-900 font-bold py-3 rounded-lg mt-4 transition">
+                        Site Oficial <i class="fa-solid fa-arrow-up-right-from-square ml-1"></i>
+                    </button>
+                </div>
+
+                <div class="card-white mt-6">
+                    <h3 class="text-lg font-bold text-blue-900 mb-4">Materiais de Estudo</h3>
+                    
+                    <a href="#" class="download-item group">
+                        <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-blue-600 shadow-sm border">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-gray-800 group-hover:text-blue-600">Regulamento 2025</div>
+                            <div class="text-xs text-gray-500">PDF • 2.3 MB</div>
+                        </div>
+                        <i class="fa-solid fa-download text-gray-300 group-hover:text-blue-600"></i>
+                    </a>
+
+                    <a href="#" class="download-item group">
+                        <div class="w-10 h-10 bg-white rounded flex items-center justify-center text-blue-600 shadow-sm border">
+                            <i class="fa-solid fa-folder-open"></i>
+                        </div>
+                        <div class="flex-1">
+                            <div class="font-bold text-sm text-gray-800 group-hover:text-blue-600">Provas Anteriores</div>
+                            <div class="text-xs text-gray-500">ZIP • 15 MB</div>
+                        </div>
+                        <i class="fa-solid fa-download text-gray-300 group-hover:text-blue-600"></i>
+                    </a>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <script>
+        // 1. Função para trocar as Abas
+        function switchTab(tabId) {
+            // Esconde todos os painéis
+            document.querySelectorAll('.tab-pane').forEach(pane => {
+                pane.classList.remove('active');
+            });
+            
+            // Desativa todos os botões
+            document.querySelectorAll('.c-tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+
+            // Ativa o alvo
+            document.getElementById(tabId).classList.add('active');
+            
+            // Encontra o botão que foi clicado e ativa (baseado no onclick)
+            // Nota: Event.currentTarget seria melhor, mas vamos varrer para ser seguro
+            const buttons = document.querySelectorAll('.c-tab');
+            for (let btn of buttons) {
+                if(btn.getAttribute('onclick').includes(tabId)) {
+                    btn.classList.add('active');
+                }
+            }
+        }
+
+        // 2. Função do Acordeão
+        function toggleAccordion(button) {
+            const content = button.nextElementSibling;
+            const icon = button.querySelector('i');
+
+            if (content.classList.contains('open')) {
+                content.classList.remove('open');
+                content.style.maxHeight = '0';
+                icon.style.transform = 'rotate(0deg)';
+            } else {
+                content.classList.add('open');
+                content.style.maxHeight = content.scrollHeight + 'px';
+                icon.style.transform = 'rotate(180deg)';
+            }
+        }
+
+        // 3. Filtro de Matérias
+        function filterSubject(type) {
+            // Desativa botões
+            document.querySelectorAll('.subject-btn').forEach(btn => btn.classList.remove('active'));
+            
+            // Esconde conteúdos
+            document.querySelectorAll('.subject-content').forEach(content => content.classList.add('hidden'));
+
+            // Ativa botão clicado
+            const clickedBtn = Array.from(document.querySelectorAll('.subject-btn'))
+                .find(b => b.getAttribute('onclick').includes(type));
+            if(clickedBtn) clickedBtn.classList.add('active');
+
+            // Mostra conteúdo
+            const target = document.getElementById(type + '-content');
+            if(target) target.classList.remove('hidden');
+        }
+
+        // 4. Usuário (avatar + nome + menu)
+        (function(){
+          const nameEl = document.getElementById('user-name-onc');
+          const avatarEl = document.getElementById('user-menu-btn-onc');
+          const menuBtn = document.getElementById('user-menu-btn-onc');
+          const menu = document.getElementById('user-menu-onc');
+          const fullName = localStorage.getItem('userName') || 'Aluno';
+          const firstName = fullName.split(' ')[0];
+          if(nameEl) nameEl.textContent = firstName;
+          if(menuBtn && menu){ menuBtn.addEventListener('click',()=>menu.classList.toggle('hidden')) }
+        })();
+
+        // 5. Compartilhar calendário com Painel do Professor
+        const olimpiadasUpcoming = [
+            { name: 'ONC 2025', date: '2025-05-20', stage: 'Fase Escolar', inscritos: 18 },
+            { name: 'OBF 2025', date: '2025-06-15', stage: 'Fase 1', inscritos: 12 },
+            { name: 'OBI 2025', date: '2025-07-10', stage: 'Fase 2', inscritos: 9 }
+        ];
+        localStorage.setItem('olimpiadasUpcoming', JSON.stringify(olimpiadasUpcoming));
+    </script>
+</body>
+</html>
